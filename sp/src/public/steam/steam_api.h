@@ -476,6 +476,9 @@ inline void CSteamAPIContext::Clear()
 // This function must be inlined so the module using steam_api.dll gets the version names they want.
 inline bool CSteamAPIContext::Init()
 {
+	// No steam client in mod
+	return false;
+	
 	if ( !SteamClient() )
 		return false;
 
