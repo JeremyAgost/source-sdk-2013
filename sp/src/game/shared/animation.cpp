@@ -59,9 +59,6 @@ extern int g_nEventListVersion;
 
 void SetEventIndexForSequence( mstudioseqdesc_t &seqdesc )
 {
-	if ( &seqdesc == NULL )
-		 return;
-
 	seqdesc.flags |= STUDIO_EVENT;
 
 	if ( seqdesc.numevents == 0 )
