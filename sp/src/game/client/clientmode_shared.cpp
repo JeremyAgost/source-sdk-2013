@@ -155,6 +155,8 @@ CON_COMMAND_F( crash, "Crash the client. Optional parameter -- type of crash:\n 
 	}
 	switch (crashtype)
 	{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnull-dereference"
 		case 0:
 			dummy = *((int *) NULL);
 			Msg("Crashed! %d\n", dummy); // keeps dummy from optimizing out
@@ -162,6 +164,7 @@ CON_COMMAND_F( crash, "Crash the client. Optional parameter -- type of crash:\n 
 		case 1:
 			*((int *)NULL) = 42;
 			break;
+#pragma clang diagnostic pop
 #if defined( _X360 )
 		case 2:
 			XBX_CrashDump(false);
