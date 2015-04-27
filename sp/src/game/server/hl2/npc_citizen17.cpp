@@ -4198,7 +4198,7 @@ void CNPC_Citizen::AddInsignia()
 void CNPC_Citizen::RemoveInsignia()
 {
 	// This is crap right now.
-	CBaseEntity *FirstEnt();
+	CBaseEntity *FirstEnt(void);
 	CBaseEntity *pEntity = gEntList.FirstEnt();
 
 	while( pEntity )
