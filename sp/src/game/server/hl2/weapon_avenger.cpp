@@ -25,7 +25,7 @@
 static ConVar sk_avenger_max_ammo("sk_avenger_max_ammo", "100" );
 static ConVar sk_avenger_recharge_rate("sk_avenger_recharge_rate", "20" );
 static ConVar sk_avenger_drain_rate("sk_avenger_drain_rate", "40" );
-static ConVar sk_avenger_overheat_delay("sk_avenger_overheat_delay", "8" );
+static ConVar sk_avenger_overheat_delay("sk_avenger_overheat_delay", "3" );
 
 class CWeaponAvenger : public CHLMachineGun
 {
@@ -74,6 +74,7 @@ protected:
 	float	m_flDrainRemainder;
 	
 	bool	m_bOverheated;
+	bool	m_bCooling;
 };
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponAvenger, DT_WeaponAvenger)
@@ -88,6 +89,7 @@ BEGIN_DATADESC( CWeaponAvenger )
 	DEFINE_FIELD( m_flDrainRemainder, FIELD_FLOAT ),
 
 	DEFINE_FIELD( m_bOverheated, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bCooling, FIELD_BOOLEAN ),
 
 	DEFINE_FUNCTION( RechargeAmmoThink ),
 	DEFINE_FUNCTION( OverheatClearThink ),
@@ -294,7 +296,7 @@ void CWeaponAvenger::PrimaryAttack( void )
 	if (!pPlayer)
 		return;
 	
-	if ( m_iClip1 > 0 && m_bOverheated == false ) {
+	if ( m_iClip1 > 0 && m_bOverheated == false && m_bCooling == false ) {
 		
 		m_nShotsFired++;
 		
@@ -382,6 +384,7 @@ void CWeaponAvenger::RemoveAmmo( float flAmmoAmount )
 	}
 	else {
 		// Overheat
+		// TODO sound and effect
 		
 		m_bOverheated = true;
 		SetThink( &CWeaponAvenger::OverheatClearThink );
@@ -430,11 +433,21 @@ void CWeaponAvenger::RechargeAmmoThink(void)
 		SetThink( &CWeaponAvenger::RechargeAmmoThink );
 		SetNextThink( gpGlobals->curtime + gpGlobals->frametime * AMMO_UPDATE_FRAME_MULTIPLIER );
 	}
+	
+	if ( m_bCooling == true && m_iClip1 == nMaxAmmo ) {
+		// Finished cooldown
+		m_bCooling = false;
+	}
 }
 
 void CWeaponAvenger::OverheatClearThink( void )
 {
+	// Stop overheating so ammo recharges
 	m_bOverheated = false;
+	
+	// Cooling down so can't fire
+	m_bCooling = true;
+	
 	SetThink( &CWeaponAvenger::RechargeAmmoThink );
 	SetNextThink( gpGlobals->curtime + gpGlobals->frametime );
 }
