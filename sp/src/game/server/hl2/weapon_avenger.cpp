@@ -183,6 +183,8 @@ void CWeaponAvenger::Equip( CBaseCombatCharacter *pOwner )
 		m_fMaxRange1 = 1400;
 	}
 	
+	m_iClip1 = sk_avenger_max_ammo.GetInt();
+	
 	BaseClass::Equip( pOwner );
 }
 
