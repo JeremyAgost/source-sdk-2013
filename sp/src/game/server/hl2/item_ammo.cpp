@@ -483,40 +483,6 @@ public:
 LINK_ENTITY_TO_CLASS(item_ar2_grenade, CItem_AR2_Grenade);
 LINK_ENTITY_TO_CLASS(item_ammo_smg1_grenade, CItem_AR2_Grenade);
 
-
-// TODO put in extra source
-class CItem_HeatSink : public CItem
-{
-public:
-	DECLARE_CLASS( CItem_HeatSink, CItem );
-	
-	void Spawn( void )
-	{
-		Precache( );
-		SetModel( "models/items/ar2_grenade.mdl");
-		BaseClass::Spawn( );
-	}
-	void Precache( void )
-	{
-		PrecacheModel ("models/items/ar2_grenade.mdl");
-	}
-	bool MyTouch( CBasePlayer *pPlayer )
-	{
-		if (ITEM_GiveAmmo( pPlayer, 1, "HeatSink"))
-		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
-			{
-				UTIL_Remove(this);
-			}
-			return true;
-		}
-		return false;
-	}
-};
-LINK_ENTITY_TO_CLASS(item_heatsink, CItem_HeatSink);
-LINK_ENTITY_TO_CLASS(item_ammo_heatsink, CItem_HeatSink);
-
-
 // ========================================================================
 //	>> BoxSniperRounds
 // ========================================================================
