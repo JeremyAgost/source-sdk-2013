@@ -1819,6 +1819,9 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("CombineCannon",	DMG_BULLET,					TRACER_LINE,			"sk_npc_dmg_gunship_to_plr", "sk_npc_dmg_gunship", NULL, 1.5 * 750 * 12, 0 ); // hit like a 1.5kg weight at 750 ft/s
 		def.AddAmmoType("AirboatGun",		DMG_AIRBOAT,				TRACER_LINE,			"sk_plr_dmg_airboat",		"sk_npc_dmg_airboat",		NULL,					BULLET_IMPULSE(10, 600), 0 );
 		
+		def.AddAmmoType("JA_Avenger",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_avenger",		0,							0,						BULLET_IMPULSE(200, 1225), 0 );
+		def.AddAmmoType("JA_Viper",			DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_viper",			0,							0,						BULLET_IMPULSE(800, 8000), 0 );
+		def.AddAmmoType("JA_HeatSinkClip",	DMG_BULLET,					TRACER_NONE,			0,							0,							"sk_max_heatsink",		0, 0 );
 
 		//=====================================================================
 		// STRIDER MINIGUN DAMAGE - Pull up a chair and I'll tell you a tale.
