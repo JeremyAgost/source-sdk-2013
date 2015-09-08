@@ -64,9 +64,14 @@ float CHeatsinkMachineGun::GetHeatsinkRechargeRate( void ) const
 	return ((CCustomWeaponInfo &)GetWpnData()).m_flHeatsinkRechargeRate;
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Give this weapon longer range when wielded by an ally NPC.
-//-----------------------------------------------------------------------------
+void CHeatsinkMachineGun::Precache( void )
+{
+	BaseClass::Precache();
+
+	PrecacheScriptSound( "SuitRecharge.Deny" );
+	PrecacheScriptSound( "AlyxEmp.Charge" );
+}
+
 void CHeatsinkMachineGun::Equip( CBaseCombatCharacter *pOwner )
 {
 	m_iClip1 = GetMaxClip1();
@@ -205,6 +210,7 @@ void CHeatsinkMachineGun::PrimaryAttack( void )
 		if (m_flNextEmptySoundTime < gpGlobals->curtime)
 		{
 			WeaponSound(EMPTY);
+			EmitSound( "SuitRecharge.Deny" );
 			m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
 		}
 		
@@ -244,9 +250,9 @@ void CHeatsinkMachineGun::RemoveAmmo( float flAmmoAmount )
 	else {
 		// Overheat
 		// TODO sound and effect
-#ifdef CLIENT_DLL
-		WeaponSound( SPECIAL1 );
-#endif
+//		WeaponSound( SPECIAL1 );
+		EmitSound( "AlyxEmp.Charge" );
+//		EmitSound( "AlyxEmp.Discharge" );
 		
 		m_bOverheated = true;
 		SetThink( &CHeatsinkMachineGun::OverheatClearThink );

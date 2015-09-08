@@ -35,7 +35,8 @@ public:
 	
 	void	PrimaryAttack( void );
 	void	SecondaryAttack( void );
-	
+
+	void	Precache( void );
 	bool	Deploy( void );
 	virtual void Equip( CBaseCombatCharacter *pOwner );
 	bool	Reload( void );
