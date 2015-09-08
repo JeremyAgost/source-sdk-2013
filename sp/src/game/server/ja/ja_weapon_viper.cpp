@@ -33,10 +33,19 @@ public:
 	CWeaponViper();
 	
 	DECLARE_SERVERCLASS();
-	
+
+	bool	IsWeaponZoomed() { return m_bInZoom; }
+
+	void	ItemBusyFrame( void );
 	void	ItemPostFrame( void );
 	void	AddViewKick( void );
-	
+
+	bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+
+	void	StopEffects( void );
+	void	CheckZoomToggle( void );
+	void	ToggleZoom( void );
+
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	Activity	GetPrimaryAttackActivity( void );
 	
@@ -49,10 +58,10 @@ public:
 	const WeaponProficiencyInfo_t *GetProficiencyValues();
 	
 	DECLARE_ACTTABLE();
-	
+
 protected:
-	
-	int		m_nVentPose;
+
+	bool	m_bInZoom;
 };
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponViper, DT_WeaponViper)
@@ -62,7 +71,7 @@ LINK_ENTITY_TO_CLASS( weapon_viper, CWeaponViper );
 PRECACHE_WEAPON_REGISTER(weapon_viper);
 
 BEGIN_DATADESC( CWeaponViper )
-
+	DEFINE_FIELD( m_bInZoom,		FIELD_BOOLEAN ),
 END_DATADESC()
 
 acttable_t	CWeaponViper::m_acttable[] =
@@ -125,35 +134,73 @@ CWeaponViper::CWeaponViper( )
 	m_fMinRange1		= 0;// No minimum range.
 	m_fMaxRange1		= 3000;
 	
-	m_nVentPose			= -1;
+	m_bInZoom			= false;
 	
 	m_bAltFiresUnderwater = false;
 	
 	m_iClip1 = GetMaxClip1();
 }
 
-void CWeaponViper::ItemPostFrame( void )
+bool CWeaponViper::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
-	// Update our pose parameter for the vents
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	
-	if ( pOwner )
+	StopEffects();
+	return BaseClass::Holster( pSwitchingTo );
+}
+
+void CWeaponViper::ToggleZoom( void )
+{
+	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+
+	if ( pPlayer == NULL )
+		return;
+
+	if ( m_bInZoom )
 	{
-		CBaseViewModel *pVM = pOwner->GetViewModel();
-		
-		if ( pVM )
+		if ( pPlayer->SetFOV( this, 0, 0.2f ) )
 		{
-			if ( m_nVentPose == -1 )
-			{
-				m_nVentPose = pVM->LookupPoseParameter( "VentPoses" );
-			}
-			
-			float flVentPose = RemapValClamped( m_nShotsFired, 0, 5, 0.0f, 1.0f );
-			pVM->SetPoseParameter( m_nVentPose, flVentPose );
+			m_bInZoom = false;
 		}
 	}
-	
+	else
+	{
+		if ( pPlayer->SetFOV( this, 20, 0.1f ) )
+		{
+			m_bInZoom = true;
+		}
+	}
+}
+
+void CWeaponViper::CheckZoomToggle( void )
+{
+	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+
+	if ( pPlayer->m_afButtonPressed & IN_ATTACK2 )
+	{
+		ToggleZoom();
+	}
+}
+
+void CWeaponViper::ItemBusyFrame( void )
+{
+	// Allow zoom toggling even when we're reloading
+	CheckZoomToggle();
+}
+
+void CWeaponViper::ItemPostFrame( void )
+{
+	// Allow zoom toggling
+	CheckZoomToggle();
+
 	BaseClass::ItemPostFrame();
+}
+
+void CWeaponViper::StopEffects( void )
+{
+	// Stop zooming
+	if ( m_bInZoom )
+	{
+		ToggleZoom();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -179,17 +226,13 @@ Activity CWeaponViper::GetPrimaryAttackActivity( void )
 //-----------------------------------------------------------------------------
 void CWeaponViper::AddViewKick( void )
 {
-#define	EASY_DAMPEN			0.5f
-#define	MAX_VERTICAL_KICK	1.0f	//Degrees
-#define	SLIDE_LIMIT			2.0f	//Seconds
-	
-	//Get the view kick
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 	
 	if ( pPlayer == NULL )
 		return;
-	
-	DoMachineGunKick( pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT );
+
+	// Big kick, up and a little to the right
+	pPlayer->ViewPunch( QAngle( random->RandomFloat( -3, -4 ), random->RandomFloat( -1, -2 ), 0 ) );
 }
 
 //-----------------------------------------------------------------------------
