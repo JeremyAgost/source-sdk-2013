@@ -6174,6 +6174,18 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 		break;
 
+	case 99:
+			gEvilImpulse101 = true;
+
+			EquipSuit();
+
+			GiveAmmo(10, "JA_HeatSinkClip");
+			GiveNamedItem("weapon_avenger");
+			GiveNamedItem("weapon_viper");
+
+			gEvilImpulse101 = false;
+			break;
+
 	case 102:
 		// Gibbage!!!
 		CGib::SpawnRandomGibs( this, 1, GIB_HUMAN );
