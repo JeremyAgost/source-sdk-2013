@@ -42,6 +42,7 @@ public:
 	bool	Reload( void );
 	void	FinishReload( void );
 	bool	ReloadOrSwitchWeapons( void );
+	void	ItemHolsterFrame( void );
 	
 	//	bool	UsesClipsForAmmo1( void ) { return false; }
 	

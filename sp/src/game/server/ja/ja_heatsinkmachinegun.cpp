@@ -149,6 +149,37 @@ bool CHeatsinkMachineGun::ReloadOrSwitchWeapons( void )
 	return false;
 }
 
+void CHeatsinkMachineGun::ItemHolsterFrame( void )
+{
+	// Don't call baseclass because we don't want to automatically reload while weapon is in background
+
+	// Must be player held
+	if ( GetOwner() && GetOwner()->IsPlayer() == false )
+		return;
+
+	// We can't be active
+	if ( GetOwner()->GetActiveWeapon() == this )
+		return;
+
+	// Check if the cooloff needs to start
+	if ( ( gpGlobals->curtime - m_flHolsterTime ) > GetHeatsinkCooloffDelay() )
+	{
+		if (m_bOverheated) {
+
+			// Manually trigger the cooloff
+			OverheatClearThink();
+
+			// Add one energy point so weapon becomes deployable again
+			m_iClip1++;
+		}
+		else {
+			RechargeAmmoThink();
+		}
+
+		m_flHolsterTime = gpGlobals->curtime;
+	}
+}
+
 void CHeatsinkMachineGun::PrimaryAttack( void )
 {
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
