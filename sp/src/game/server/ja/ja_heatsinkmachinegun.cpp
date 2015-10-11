@@ -33,8 +33,8 @@ BEGIN_DATADESC( CHeatsinkMachineGun )
 	DEFINE_FIELD( m_bOverheated, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bCooling, FIELD_BOOLEAN ),
 
-	DEFINE_FUNCTION( RechargeAmmoThink ),
-	DEFINE_FUNCTION( OverheatClearThink ),
+	DEFINE_THINKFUNC( RechargeAmmoThink ),
+	DEFINE_THINKFUNC( OverheatClearThink ),
 
 END_DATADESC()
 
